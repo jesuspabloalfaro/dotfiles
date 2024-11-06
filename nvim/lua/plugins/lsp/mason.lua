@@ -22,7 +22,7 @@ return {
     mason_lspconfig.setup({
       -- list of servers for mason to install
       ensure_installed = {
-        "pyright",
+        "basedpyright",
       },
     })
 
@@ -34,6 +34,9 @@ return {
         "pylint",
         "flake8",
         "mypy",
+        "clangd",
+        "typescript-language-server",
+        "gopls",
       },
     })
   end,

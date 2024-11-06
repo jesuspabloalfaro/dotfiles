@@ -1,5 +1,8 @@
 return {
   "neovim/nvim-lspconfig",
+  opts = {
+    inlay_hints = { enabled = true },
+  },
   event = { "BufReadPre", "BufNewFile" },
   dependencies = {
     "hrsh7th/cmp-nvim-lsp",
@@ -13,13 +16,8 @@ return {
     -- Define the on_attach function to map keys after the LSP server attaches to the buffer
     local on_attach = function(client, bufnr)
       local opts = { noremap = true, silent = true }
-
       -- Bind `gd` to jump to declaration
       vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-
-      -- Optionally, you can also bind keys for other LSP features
-      -- Example: bind `gD` for go to definition
-      vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
     end
 
     mason_lspconfig.setup_handlers({
@@ -30,6 +28,53 @@ return {
         })
       end,
     })
+
+    lspconfig.basedpyright.setup({
+        capabilities = require('cmp_nvim_lsp').default_capabilities(),
+        on_attach = on_attach,
+        settings = {
+            basedpyright = {
+                analysis = {
+                    autoSearchPaths = true,
+                    diagnosticMode = "openFilesOnly",
+                    useLibraryCodeForTypes = true
+                },
+            },
+        },
+    })
+
+    lspconfig.clangd.setup({
+        capabilities = require('cmp_nvim_lsp').default_capabilities(),
+        settings = {
+            clangd = {
+                InlayHints = {
+                    Designators = true,
+                    Enabled = true,
+                    ParameterNames = true,
+                    DeducedTypes = true,
+                },
+                fallbackFlags = { "-std=c++20" }
+            },
+        },
+    })
+
+    lspconfig.gopls.setup({
+        on_attach = on_attach,
+        settings = {
+        gopls = {
+          hints = {
+            rangeVariableTypes = true,
+            parameterNames = true,
+            constantValues = true,
+
+            assignVariableTypes = true,
+            compositeLiteralFields = true,
+            compositeLiteralTypes = true,
+            functionTypeParameters = true,
+
+          },
+        }
+      }
+    })
   end,
 }
-
